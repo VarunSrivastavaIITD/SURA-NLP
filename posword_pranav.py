@@ -22,7 +22,7 @@ import cupy
 from itertools import islice, cycle
 
 
-# Definition of a recurrent net for language modeling
+# Subnetwork for RecNetwork class 
 class RNNForLM(chainer.Chain):
     def __init__(self, n_vocab, n_units):
         super(RNNForLM, self).__init__()
@@ -135,10 +135,12 @@ class RecNetwork(chainer.Chain):
 
             self.linear = L.Linear(n_lin_units, n_vocab)
 
+        # Persistent storage for variables that will need to be (de)serialized on save/resume
         self.add_persistent('n_vocab', n_vocab)
         self.add_persistent('n_pos', n_pos)
         self.add_persistent('n_lin_layers', n_lin_layers)
 
+        # Uniform Random Initialization for network parameters
         for param in self.linear.params():
             param.data[...] = np.random.uniform(-0.1, 0.1, param.data.shape)
 
@@ -147,8 +149,6 @@ class RecNetwork(chainer.Chain):
         self.pos_layer.reset_state()
 
     def __call__(self, x):
-        # x1 = x[:self.n_vocab]
-        # x2 = x[self.n_vocab:]
 
         x1 = x[:, 0]
         x2 = x[:, 1]
