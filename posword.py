@@ -21,7 +21,7 @@ from custom_classifier import CustomClassifier
 # from keras.preprocessing.text import Tokenizer
 
 
-# Definition of a recurrent net for language modeling
+# Subnetwork for Rec2Network class
 class RNNForLM(chainer.Chain):
     def __init__(self, n_vocab, n_units):
         super(RNNForLM, self).__init__()
@@ -44,6 +44,8 @@ class RNNForLM(chainer.Chain):
         h2 = self.l2(F.dropout(h1, ratio=.25))
         y = self.l3(F.dropout(h2, ratio=.25))
         return y
+
+# Subnetwork for RecNetwork class
 
 
 class RNNForBrown(chainer.Chain):
@@ -108,6 +110,8 @@ class StackedLinearLayers(chainer.ChainList):
             h = self[i](F.dropout(h, ratio=self.dropout_ratio))
 
         return h
+
+#
 
 
 class RecNetwork(chainer.Chain):
