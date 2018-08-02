@@ -8,7 +8,7 @@ Analysis and Optimisation of Text Generating Models
 - numpy
 - keras
 - argparse
-- nltk (with brown corpus data)
+- nltk (with brown corpus and wordnet data)
 
 ## File Synopsis
 
@@ -17,3 +17,5 @@ Analysis and Optimisation of Text Generating Models
     2. *class* **ParallelSequentialIterator**: Dataset iterator to create a batch of sequences at different positions
     3. *class* **BPTTUpdater**: Custom updater for truncated BackProp Through Time (BPTT)
     4. *function* **compute_perplexity**: Routine to rewrite the result dictionary of LogReport to add perplexity values
+
+2. [`custom_classifier.py`](custom_classifier.py): Classifier wrapper to setup standard classifier components (Loss function, Metrics etc)
