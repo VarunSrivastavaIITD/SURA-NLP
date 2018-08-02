@@ -45,6 +45,7 @@ class RNNForLM(chainer.Chain):
         y = self.l3(F.dropout(h2, ratio=.25))
         return y
 
+
 # Subnetwork for RecNetwork class
 
 
@@ -74,7 +75,7 @@ class RNNForBrown(chainer.Chain):
 class StackedLSTMLayers(chainer.ChainList):
     def __init__(self, n_units, n_layers):
         super(StackedLSTMLayers, self).__init__(
-            * [L.LSTM(n_units, n_units) for i in range(n_layers)])
+            *[L.LSTM(n_units, n_units) for i in range(n_layers)])
         self.add_persistent('n_layers', n_layers)
 
         for param in self.params():
@@ -96,7 +97,7 @@ class StackedLSTMLayers(chainer.ChainList):
 class StackedLinearLayers(chainer.ChainList):
     def __init__(self, n_units, n_layers, dropout_ratio=0.25):
         super(StackedLinearLayers, self).__init__(
-            * [L.Linear(n_units, n_units) for i in range(n_layers)])
+            *[L.Linear(n_units, n_units) for i in range(n_layers)])
         self.add_persistent('n_layers', n_layers)
         self.add_persistent('dropout_ratio', dropout_ratio)
 
@@ -110,6 +111,7 @@ class StackedLinearLayers(chainer.ChainList):
             h = self[i](F.dropout(h, ratio=self.dropout_ratio))
 
         return h
+
 
 #
 
@@ -163,12 +165,12 @@ class RecNetwork(chainer.Chain):
         if self.n_lin_layers > 0:
             h = self.dense(
                 self.compress(
-                    F.concat((F.softmax(self.vocab_layer(x[:, 0])), F.softmax(
-                        self.pos_layer(x[:, 1]))))))
+                    F.concat((F.softmax(self.vocab_layer(x[:, 0])),
+                              F.softmax(self.pos_layer(x[:, 1]))))))
         else:
             h = self.compress(
-                F.concat((F.softmax(self.vocab_layer(x[:, 0])), F.softmax(
-                    self.pos_layer(x[:, 1])))))
+                F.concat((F.softmax(self.vocab_layer(x[:, 0])),
+                          F.softmax(self.pos_layer(x[:, 1])))))
 
         out = h if self.use_hsmax else self.linear(h)
 
@@ -460,8 +462,8 @@ def main():
     dataset = np.array(construct_dataset(args.vocabulary)).astype(np.int32)
     len_dataset = len(dataset)
     train = dataset[:int(args.trainsplit * len_dataset)]
-    val = dataset[int(args.trainsplit * len_dataset):int((
-        args.trainsplit + args.testsplit) * len_dataset)]
+    val = dataset[int(args.trainsplit * len_dataset):int(
+        (args.trainsplit + args.testsplit) * len_dataset)]
     test = dataset[int((args.trainsplit + args.testsplit) * len_dataset):]
     # n_vocab = max(train) + 1  # train is just an array of integers
     word_set, pos_set = list(zip(*dataset))
@@ -553,54 +555,6 @@ def main():
 
     # Serialize the final model
     chainer.serializers.save_npz(args.model, model)
-
-
-# def construct_dataset(nvocab):
-# def num_there(s):
-#     return any(i.isdigit() for i in s)
-
-# tag_list = [
-#     t[1] for t in brown.tagged_words()
-#     if t[0] not in '!"#$%&()*+,./:;<=>?@[\\]^_`{|}~\t\n'
-#     and not num_there(t[0])
-# ]
-
-# tokenizer = Tokenizer(
-#     num_words=nvocab, filters='!"#$%&()*+,./:;<=>?@[\\]^_`{|}~\t\n')
-# texts = [
-#     ' '.join(w.lower() for w in s if not num_there(w))
-#     for s in brown.sents()
-# ]
-
-# if __debug__:
-#     pass
-#     # print(len([w for t in texts for w in t.split()]))
-#     # print(len(set([w for t in texts for w in t.split()])))
-
-# tokenizer.fit_on_texts(texts)
-# sequences = tokenizer.texts_to_sequences(texts)
-# word_list = [word for item in sequences for word in item]
-
-# if __debug__:
-#     # from collections import Counter
-#     print('Tag Len ', len(tag_list))
-#     print('Word Len ', len(word_list))
-#     # a = [
-#     #     w for t in texts for w in t.split()
-#     #     if w not in '!"#$%&()*+,-./:;<=>?@[\\]^_`{|}~\t\n'
-#     # ]
-#     # sa = set(a)
-#     # sb = set(word_list)
-#     # c = Counter(a)
-#     # csort = sorted(((b, a) for a, b in c.items()), reverse=True)
-
-#     # ckeys = [i for i, (b, a) in enumerate(csort)]
-
-#     # print(set(ckeys) - set(word_list))
-
-# assert (len(tag_list) == len(word_list))
-
-# return list(zip(word_list, tag_list))
 
 
 def num_there(s):
