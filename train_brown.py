@@ -1,54 +1,18 @@
 #!/usr/bin/env python
 
-from __future__ import division
-from __future__ import print_function
+from __future__ import division, print_function
+
 import argparse
-
-from keras.preprocessing.text import Tokenizer
-
-from nltk.corpus import brown
-
-import numpy as np
+from itertools import cycle, islice
 
 import chainer
 import chainer.functions as F
 import chainer.links as L
+import numpy as np
 from chainer import training
 from chainer.training import extensions
-from chainer.iterators import SerialIterator
-from chainer.links import BinaryHierarchicalSoftmax
-from nltk import FreqDist
-import cupy
-from itertools import islice, cycle
-
-# import logging
-# class StreamToLogger(object):
-#    """
-#    Fake file-like stream object that redirects writes to a logger instance.
-#    """
-#    def __init__(self, logger, log_level=logging.INFO):
-#       self.logger = logger
-#       self.log_level = log_level
-#       self.linebuf = ''
-
-#    def write(self, buf):
-#       for line in buf.rstrip().splitlines():
-#          self.logger.log(self.log_level, line.rstrip())
-
-# logging.basicConfig(
-#    level=logging.DEBUG,
-#    format='%(asctime)s:%(levelname)s:%(name)s:%(message)s',
-#    filename="out.log",
-#    filemode='a'
-# )
-
-# stdout_logger = logging.getLogger('STDOUT')
-# sl = StreamToLogger(stdout_logger, logging.INFO)
-# sys.stdout = sl
-
-# stderr_logger = logging.getLogger('STDERR')
-# sl = StreamToLogger(stderr_logger, logging.ERROR)
-# sys.stderr = sl
+from keras.preprocessing.text import Tokenizer
+from nltk.corpus import brown
 
 
 # Definition of a recurrent net for language modeling
@@ -268,8 +232,8 @@ def main():
     # dataset = dataset[:int(0.1 * len(dataset))]
     len_dataset = len(dataset)
     train = dataset[:int(args.trainsplit * len_dataset)]
-    val = dataset[int(args.trainsplit * len_dataset):int((
-        args.trainsplit + args.testsplit) * len_dataset)]
+    val = dataset[int(args.trainsplit * len_dataset):int(
+        (args.trainsplit + args.testsplit) * len_dataset)]
     test = dataset[int((args.trainsplit + args.testsplit) * len_dataset):]
     n_vocab = max(train) + 1  # train is just an array of integers
     print('#vocab =', n_vocab)
@@ -285,15 +249,6 @@ def main():
 
     # Prepare an RNNLM model
     rnn = RNNForLM(n_vocab, args.unit)
-    # tree = BinaryHierarchicalSoftmax.create_huffman_tree(FreqDist(dataset))
-    # lossfn = BinaryHierarchicalSoftmax(args.unit, tree)
-
-    # if args.gpu >= 0:
-    #     # Make a specified GPU current
-    #     chainer.cuda.get_device_from_id(args.gpu).use()
-    #     lossfn.to_gpu()
-
-    # model = L.Classifier(rnn, lossfun=lossfn)
     model = L.Classifier(rnn)
     model.compute_accuracy = False  # we only want the perplexity
     if args.gpu >= 0:
