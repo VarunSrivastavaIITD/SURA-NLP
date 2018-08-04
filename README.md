@@ -19,6 +19,8 @@ Analysis and Optimisation of Text Generating Models
     4. *function* **compute_perplexity**: Routine to rewrite the result dictionary of LogReport to add perplexity values
 
 2. [`custom_classifier.py`](custom_classifier.py): Classifier wrapper to setup standard classifier components (Loss function, Metrics etc)
+
+
 3. [`posword.py`](posword.py): Chainer based RNN model (words + parts of speech information incorporated)
     1. *class* **BPTTUpdater** : Custom updater for truncated BackProp Through Time (BPTT)
     2. *class* **ParallelSequentialIterator**: Dataset iterator to create a batch of sequences at different positions
@@ -29,3 +31,5 @@ Analysis and Optimisation of Text Generating Models
     7. *class* **StackedLSTMLayers**: Class defining the LSTM subnetwork used in Rec2Network
     8. *class* **StackedLinearLayers**: Class defining the Linear layers used in Rec2Network
     9. *function* **compute_perplexity**: Routine to rewrite the result dictionary of LogReport to add perplexity values
+
+4. [`test_recnetwork.py`](test_recnetwork.py): Driver program for [`posword.py`](posword.py)
